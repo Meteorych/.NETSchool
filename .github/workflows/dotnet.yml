@@ -13,6 +13,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy: 
+      matrix: {dir: ['homework1/Project1', 'homework1/Project2', 'homework1/Project3', 'homework2/Task1', 'homework2/Task2', 'homework2/Task3', 'homework3/task1', 'homework3/task2', 'homework4/Task1', 'homework4/Task2']}
 
     steps:
     - uses: actions/checkout@v3
@@ -22,10 +24,10 @@ jobs:
         dotnet-version: 7.0.x
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: homework1/Project1
+      working-directory: ${{ matrix.dir }}
     - name: Build
       run: dotnet build --no-restore
-      working-directory: homework1/Project1
+      working-directory: ${{ matrix.dir }}
     - name: Test
       run: dotnet test --no-build --verbosity normal
-      working-directory: homework1/Project1
+      working-directory: ${{ matrix.dir }}
