@@ -75,7 +75,9 @@ public class SparseMatrix : IEnumerable<long>
 
     public IEnumerable<(int, int, long)> GetNonZeroElements()
     {
-        var sortedElements = _data.OrderBy(pair => pair.Key.Item2).ThenBy(pair => pair.Key.Item1);
+        var sortedElements = _data
+            .OrderBy(pair => pair.Key.Item2)
+            .ThenBy(pair => pair.Key.Item1);
         foreach (var el in sortedElements)
         {
             yield return (el.Key.Item1, el.Key.Item2, el.Value);
