@@ -1,107 +1,102 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Text;
 
-namespace Task1
+public class SparseMatrix : IEnumerable<long>
 {
-    public class SparseMatrix : IEnumerable<long>
-    {
-        private readonly int _columns;
-        private readonly int _rows;
-        private Dictionary<(int, int), long> _data;
+    private readonly int _columns;
+    private readonly int _rows;
+    private readonly Dictionary<(int, int), long> _data;
         
-        public SparseMatrix(int rows, int columns)
+    public SparseMatrix(int rows, int columns)
+    {
+        if (columns <= 0 || rows <= 0)
         {
-            if (columns <= 0 || rows <= 0)
-            {
-                throw new ArgumentException("Wrong arguments! Rows and columns should be greater that zero.");
-            }
-            _columns = columns;
-            _rows = rows;
-            _data = new Dictionary<(int, int), long>();
+            throw new ArgumentException("Wrong arguments! Rows and columns should be greater that zero.");
         }
+        _columns = columns;
+        _rows = rows;
+        _data = new Dictionary<(int, int), long>();
+    }
 
-        public long this[int row, int column]
+    public long this[int row, int column]
+    {
+        set
         {
-            set
-            {
-                CheckIndices(row, column);
-                _data.Add((row, column), value);
-            }
-            get
-            {
-                CheckIndices(row, column);
-                return _data.ContainsKey((row, column)) ? _data[(row, column)] : 0L;
-            }
+            CheckIndices(row, column);
+            if (_data.ContainsKey((row, column))) _data[(row, column)] = value; 
+            _data.Add((row, column), value);
         }
-
-        public override string ToString()
+        get
         {
-            var resultBuilder = new StringBuilder();
-            for (var i = 0; i < _rows; i++)
+            CheckIndices(row, column);
+            return _data.TryGetValue((row, column), out var value) ? value : 0L;
+        }
+    }
+
+    public override string ToString()
+    {
+        var resultBuilder = new StringBuilder();
+        for (var i = 0; i < _rows; i++)
+        {
+            for (var j = 0; j < _columns; j++)
             {
-                for (var j = 0; j < _columns; j++)
+                //Очевидна идея использовать просто индексатор при построении строки, но я предполагаю, что таким образом программа будет исполняться быстрее, как минимум из-за отсутствия постоянных
+                //обращений к CheckIndices; тесты показали небольшой выигрыш в миллисекундах, поэтому решился на такой эксперимент в данном конкретном случае, заодно интересно
+                //что вы считаете насчёт подобной реализации.
+                if (_data.ContainsKey((i, j)))
                 {
-                    //Очевидна идея использовать просто индексатор при построении строки, но я предполагаю, что таким образом программа будет исполняться быстрее, как минимум из-за остутствия постоянных
-                    //обращений к CheckIndices и тесты показали небольшой выигрыш в миллисекундах, поэтому решился на такой эксперимент в данном конкретном случае, заодно интересно
-                    //что вы считает насчёт подобной реализации.
-                    if (_data.ContainsKey((i, j)))
-                    {
-                        resultBuilder.Append($" {_data[(i, j)]} ");
-                    }
-                    else
-                    {
-                        resultBuilder.Append(" 0 ");
-                    }
+                    resultBuilder.Append($" {_data[(i, j)]} ");
                 }
-                resultBuilder.Append('\n');
-            }
-            return resultBuilder.ToString();
-        }
-
-
-
-        public IEnumerator<long> GetEnumerator()
-        {
-            for (var i = 0; i < _rows; i++)
-            {
-                for (var j = 0; j < _columns; j++)
+                else
                 {
-                    yield return this[i, j];
+                    resultBuilder.Append(" 0 ");
                 }
             }
+            resultBuilder.Append('\n');
         }
+        return resultBuilder.ToString();
+    }
 
-        IEnumerator IEnumerable.GetEnumerator()
+    public IEnumerator<long> GetEnumerator()
+    {
+        for (var i = 0; i < _rows; i++)
         {
-            return GetEnumerator();
-        }
-
-        public IEnumerable<(int, int, long)> GetNonZeroElements()
-        {
-            var sortedElements = _data.OrderBy(pair => pair.Key.Item2).ThenBy(pair => pair.Key.Item1);
-            foreach (var el in sortedElements)
+            for (var j = 0; j < _columns; j++)
             {
-                yield return (el.Key.Item1, el.Key.Item2, el.Value);
+                yield return this[i, j];
             }
         }
+    }
 
-        public int GetCount(long x)
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public IEnumerable<(int, int, long)> GetNonZeroElements()
+    {
+        var sortedElements = _data.OrderBy(pair => pair.Key.Item2).ThenBy(pair => pair.Key.Item1);
+        foreach (var el in sortedElements)
         {
-            if (x == 0) return _columns * _rows - _data.Count;
-            var occurrencesOfValue = _data.Where(pair => pair.Value == x);
-            return occurrencesOfValue.Count();
-
+            yield return (el.Key.Item1, el.Key.Item2, el.Value);
         }
+    }
 
-        private void CheckIndices(int row, int column)
-        {
-            if (row < 0 || row >= _rows || column < 0 || column >= _columns) 
-            {
-                throw new ArgumentOutOfRangeException(nameof(row));
-            }
-            
-        }
+    public int GetCount(long x)
+    {
+        if (x == 0) return _columns * _rows - _data.Count;
+        var occurrencesOfValue = _data.Where(pair => pair.Value == x);
+        return occurrencesOfValue.Count();
 
     }
+
+    private void CheckIndices(int row, int column)
+    {
+        if (row < 0 || row >= _rows || column < 0 || column >= _columns) 
+        {
+            throw new ArgumentOutOfRangeException(nameof(row), "Row or column index is out of range.");
+        }
+            
+    }
+
 }
