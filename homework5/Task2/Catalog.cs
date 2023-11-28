@@ -10,7 +10,7 @@ public class Catalog
     {
         get
         {
-            if (!IsbnCheck(isbn)) throw new ArgumentException("Wrong isbn.");
+            if (!IsbnCheck(isbn)) throw new ArgumentException("Wrong ISBN.");
             return _books[RemoveDashesFromIsbn(isbn)] ?? throw new KeyNotFoundException("Book with such ISBN isn't included in this catalog.");
         }
         set
