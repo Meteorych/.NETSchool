@@ -77,11 +77,10 @@ public class SparseMatrix : IEnumerable<long>
     {
         var sortedElements = _data
             .OrderBy(pair => pair.Key.Item2)
-            .ThenBy(pair => pair.Key.Item1);
-        foreach (var el in sortedElements)
-        {
-            yield return (el.Key.Item1, el.Key.Item2, el.Value);
-        }
+            .ThenBy(pair => pair.Key.Item1)
+            .Select(pair => (pair.Key.Item1, pair.Key.Item2, pair.Value));
+        
+        return sortedElements;
     }
 
     public int GetCount(long x)

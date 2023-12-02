@@ -2,9 +2,11 @@
 
 public class Book
 {
+    private readonly HashSet<string>? _authors;
     public string Title { get; }
     public DateOnly? ReleaseDate { get; }
-    public HashSet<string>? Authors { get; }
+    public IEnumerable<string>? Authors => _authors;
+    
 
     public Book(string title, DateOnly? releaseDate = null, HashSet<string>? authors = null)
     {
@@ -14,6 +16,6 @@ public class Book
         }
         Title = title;
         ReleaseDate = releaseDate;
-        Authors = authors ?? new HashSet<string>();
+        _authors = authors ?? new HashSet<string>();
     }
 }

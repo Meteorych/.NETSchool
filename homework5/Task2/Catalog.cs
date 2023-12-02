@@ -46,7 +46,7 @@ public class Catalog
 
     private static bool IsbnCheck(string isbn)
     {
-        var regexIsbn = new Regex(@"^\d{13}$|^\d{3}-\d-\d{2}-\d{6}-\d$");
+        var regexIsbn = new Regex(@"^[0-9]{13}$|^[0-9]{3}-[0-9]-[0-9]{2}-[0-9]{6}-[0-9]$");
         return regexIsbn.IsMatch(isbn);
     }
 
