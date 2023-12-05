@@ -73,14 +73,16 @@ public class Cache
                 Remove(pair.Key);
             }
 
-            if (!compulsoryRemove) return;
-            if (pair.Value.LastAccessed < oldestTime)
+            if (compulsoryRemove && pair.Value.LastAccessed < oldestTime)
             {
                 lastAccessedElementKey = pair.Key;
             }
         }
 
-        Remove(lastAccessedElementKey);
+        if (!string.IsNullOrEmpty(lastAccessedElementKey))
+        {
+            Remove(lastAccessedElementKey);
+        }
     }
 
     private void CleanupCache()
