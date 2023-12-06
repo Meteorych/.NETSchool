@@ -1,21 +1,19 @@
 ﻿using System.Diagnostics;
-using System.Numerics;
 
-namespace Task2
+namespace Task2;
+
+internal class Program
 {
-    internal class Program
-    {
-        static void Main(string[] args)
-        { 
-            var sw = Stopwatch.StartNew();
-            sw.Start();
-            var result = GcdAsync.Gcd(1234567890, 63018038201).Result;
-            Console.WriteLine(sw.ElapsedMilliseconds);
-            sw.Stop();
-            Console.WriteLine(result);
-            Console.ReadLine();
-        }
+    static void Main(string[] args)
+    { 
+        var sw = Stopwatch.StartNew();
+        sw.Start();
+        var result = GcdAsync.Gcd(1234567890, 63018038201).Result;
+        Console.WriteLine(sw.ElapsedMilliseconds);
+        sw.Stop();
+        Console.WriteLine(result);
+        Console.ReadLine();
+    }
 
         
-    }
 }

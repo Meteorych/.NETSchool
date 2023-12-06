@@ -1,8 +1,7 @@
-﻿namespace Task1
+﻿namespace Task1;
+
+public class CacheItem(object value)
 {
-    public class CacheItem(object value)
-    {
-        public object Value { get;} = value;
-        public DateTime LastAccessed { get;} = DateTime.Now;
-    }
+    public object Value { get;} = value;
+    public DateTime LastAccessed { get;} = DateTime.Now;
 }
