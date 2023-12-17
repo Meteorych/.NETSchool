@@ -13,7 +13,7 @@ public class Program
 		{
 			using (var dataStream = new StreamReader(Path.Combine(Environment.CurrentDirectory, "data.csv")))
 			{
-				string line;
+				string? line;
 				var lineNumber = 0;
 				while (!string.IsNullOrEmpty(line = dataStream.ReadLine()))
 				{
@@ -49,13 +49,14 @@ public class Program
 		{
 			Console.WriteLine($"{e}");
 		}
-		AverageVacationSpan(vacations);
+		Console.WriteLine(AverageVacationSpan(vacations));
 		VacationEmployee(vacations);
 	}
 
 	public static double AverageVacationSpan(List<Vacation> vacations)
 	{
 		var result = vacations
+			.AsParallel()
 			.Select(vacation => (vacation.EndDate - vacation.BeginDate).Days + 1)
 			.Average();
 		return result; 
@@ -64,13 +65,15 @@ public class Program
 	public static void VacationEmployee(List<Vacation> vacations)
 	{
 		var result = vacations
+			.AsParallel()
 			.GroupBy(vacation => vacation.EmployeeName)
 			.Select(employeeVacations => new
 			{
 				employeeName = employeeVacations.Key,
 				TotalVacationDays = employeeVacations.Sum(g => (g.EndDate - g.BeginDate).Days + 1)
 			})
-			.OrderByDescending(employee => employee.TotalVacationDays);
+			.OrderByDescending(employee => employee.TotalVacationDays)
+			.ToList();
 		ToJson(result);
 		foreach (var element in result)
 		{
@@ -78,9 +81,9 @@ public class Program
 		}
 	}
 
-	public static void ToJson(IOrderedEnumerable<object> vacationDuration)
+	public static void ToJson(object vacationDuration)
 	{
-		var json = JsonSerializer.Serialize(vacationDuration, new JsonSerializerOptions() { WriteIndented = true });
-		File.WriteAllText("data.json", json);
+		var json = JsonSerializer.Serialize(vacationDuration, new JsonSerializerOptions() { WriteIndented = true});
+		File.WriteAllText("persons.json", json);
 	}
 }

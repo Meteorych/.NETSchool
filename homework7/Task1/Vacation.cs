@@ -13,9 +13,5 @@ namespace Task1
 		public DateTime BeginDate { get; set; }
 		public DateTime EndDate { get; set; }
 
-		public Vacation()
-		{
-			
-		}
 	}
 }
